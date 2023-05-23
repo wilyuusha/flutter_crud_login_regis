@@ -26,19 +26,6 @@ class Auth {
       email: email,
       password: password
       );
-
-      // add the details
-      addUserDetails(
-        email, 
-        password
-      );
-  }
-
-  Future addUserDetails(String email, String password) async {
-    await FirebaseFirestore.instance.collection('users').add({
-      'email': email,
-      'password': password,
-    });
   }
 
   Future<void> signOut() async {

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_firebase/auth.dart';
 import 'package:flutter_firebase/getDataFromFirebase/get_Email.dart';
 import 'package:flutter_firebase/forms/update_data.dart';
+import 'package:flutter_firebase/forms/create_data.dart';
 
 class HomePage extends StatefulWidget {
   HomePage({Key? key}) : super(key: key);
@@ -21,6 +22,14 @@ class _HomePageState extends State<HomePage> {
     super.initState();
     getDocID();
   }
+
+  Future<void> refreshData() async {
+    final snapshot = await FirebaseFirestore.instance.collection('users').get();
+    setState(() {
+      docIDs = snapshot.docs.map((document) => document.reference.id).toList();
+    });
+  }
+
 
   Future<void> getDocID() async {
     final snapshot = await FirebaseFirestore.instance.collection('users').get();
@@ -52,12 +61,27 @@ class _HomePageState extends State<HomePage> {
   Widget _title() {
     return Row(
       children: [
-        const Text('Firebase Activity 1&2'),
-        const Spacer(), // Add a spacer widget to push the next widget to the right
+        const Text('Firebase Activity 1 & 2'),
+        const Spacer(),
         IconButton(
-          icon: Icon(Icons.refresh), // Replace with the desired icon for the right-aligned widget
+        icon: const Icon(Icons.refresh), 
+        onPressed: () {
+          refreshData();
+        },
+      ),
+        IconButton(
+          icon: const Icon(Icons.add),
           onPressed: () {
-            // Handle the onPressed event for the right-aligned widget
+            Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => CreateDataPage(),
+            ),
+          ).then((result) {
+            if (result == true) {
+              // Document created successfully, perform any desired actions
+            }
+          });
           },
         ),
       ],
@@ -102,11 +126,11 @@ class _HomePageState extends State<HomePage> {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         IconButton(
-                          icon: Icon(Icons.edit),
+                          icon: const Icon(Icons.edit),
                           onPressed: () => updateDocument(docIDs[index]),
                         ),
                         IconButton(
-                          icon: Icon(Icons.delete),
+                          icon: const Icon(Icons.delete),
                           onPressed: () => deleteDocument(docIDs[index]),
                         ),
                       ],
